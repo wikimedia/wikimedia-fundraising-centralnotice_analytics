@@ -1,0 +1,36 @@
+druid:
+  # Set bypass_proxy to true to bypass system-configured proxy, for WMF SWAP/Jupyter setup.
+  bypass_proxy: true
+  url: "protocol://host:port"
+  endpoint: "druid/v2"
+
+hive:
+  host: "host"
+  port: 10000
+
+# Config to translate from CN project to WMF production project, as it appears in the
+# project column of the wmf.pageview_hourly table in Hive. Coordinate with
+# $wgNoticeProject and $wgServer in InitialiseSettings.php, and
+# PageviewDefinition.getProjectFromHost() in analytics-refinery-source.
+
+# In this structure, outer keys are the project name as used for CentralNotice
+# campaign targeting. In the inner dictionaries, pattern is a string that apperas in
+# wmf.pageview_hourly.project in Hive and that can uniquely select a project, and
+# lang_prefix indicates whether a language code may be added at the beginning of the
+# string. CentralNotice projects omitted from this config follow the default lang.project
+# format.
+project_lookup:
+  wikimedia:
+    - { pattern: 'advisory.wikimedia', lang_prefix: false }
+    - { pattern: 'wikimediafoundation', lang_prefix: false }
+    - { pattern: 'incubator.wikimedia', lang_prefix: false }
+    - { pattern: 'outreach.wikimedia', lang_prefix: false }
+    - { pattern: 'usability.wikimedia', lang_prefix: false }
+    - { pattern: 'strategy.wikimedia', lang_prefix: false }
+    - { pattern: 'wikimania.....wikimedia', lang_prefix: false }
+  commons: [ { pattern: 'commons.wikimedia', lang_prefix: false } ]
+  mediawiki: [ { pattern: 'mediawiki', lang_prefix: false } ]
+  meta: [ { pattern: 'meta.mediawiki', lang_prefix: false } ]
+  wikispecies: [ { pattern: 'species.wikimedia', lang_prefix: false } ]
+  test: [ { pattern: 'test.wikipedia', lang_prefix: false } ]
+  wikidata: [ { pattern: 'wikidata', lang_prefix: false } ]
