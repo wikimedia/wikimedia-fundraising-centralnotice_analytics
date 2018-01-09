@@ -32,6 +32,12 @@ class Query:
         self.warnings = []
         """A list of strings with warnings about the query."""
 
+        self.columns_for_avg = None
+        """Columns to include in averages of results. Should be set by subclass."""
+
+        self.columns_for_totals = None
+        """Columns to include in totals of results. Should be set by subclass."""
+
 
     def print_warnings( self ):
         print ( '\n'.join( self.warnings ) )
@@ -42,6 +48,14 @@ class Query:
             self._pandas_df = self._make_pandas_df()
 
         return self._pandas_df
+
+
+    def totals( self ):
+        return self.pandas_df()[ self.columns_for_totals ].sum()
+
+
+    def averages( self ):
+        return self.pandas_df()[ self.columns_for_avg ].mean()
 
 
     def plot( self, title = None ):

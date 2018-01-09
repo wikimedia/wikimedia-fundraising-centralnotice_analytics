@@ -18,6 +18,9 @@ class PageviewsQuery( Query ):
         super().__init__( campaign_spec, interval, granularity, custom_filter,
             group_by_cols )
 
+        self.columns_for_avg = [ 'pageviews' ]
+        self.columns_for_totals = [ 'pageviews' ]
+
         self._proj_lang_url_strs = self._make_proj_lang_url_strs()
 
         self.warnings.append( 'Filtering for logged-in status currently unavailable.' )

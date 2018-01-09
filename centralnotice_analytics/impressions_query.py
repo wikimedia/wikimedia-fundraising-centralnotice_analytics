@@ -17,6 +17,9 @@ class ImpressionsQuery( Query ):
         super().__init__( campaign_spec, interval, granularity, custom_filter,
             group_by_cols )
 
+        self.columns_for_avg = [ 'impressions' ]
+        self.columns_for_totals = [ 'impressions' ]
+
         self._druid_helper = DruidHelper(
             self.druid_timeseries_query_args(),
             group_by_cols

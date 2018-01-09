@@ -32,6 +32,9 @@ class RatesQuery( Query ):
             custom_impressions_filter
         )
 
+        self.columns_for_avg = [ 'pageviews', 'impressions', 'difference', 'rate' ]
+        self.columns_for_totals = [ 'pageviews', 'impressions', 'difference' ]
+
         self.warnings += (
             list( map( lambda w: 'impressions: ' + w, self._impressions.warnings ) ) +
             list( map( lambda w: 'pageviews: ' + w, self._pageviews.warnings ) )
