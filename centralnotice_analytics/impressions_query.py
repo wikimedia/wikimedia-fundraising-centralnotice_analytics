@@ -33,7 +33,7 @@ class ImpressionsQuery( Query ):
     def prepare_plot( self, title = None  ):
 
         if ( title is None ):
-            title = 'Impressions, ' + self._make_title()
+            title = 'Impressions, ' + self.make_title_base()
 
         return TimeSeriesPlot(
             self.pandas_df(),

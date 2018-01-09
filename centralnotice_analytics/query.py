@@ -67,7 +67,7 @@ class Query:
         print ( self.make_query_dump() )
 
 
-    def _make_title( self ):
+    def make_title_base( self ):
         return '{0} by {1}, {2}'.format(
             self._interval,
             self._granularity,

@@ -63,7 +63,7 @@ class RatesQuery( Query ):
     def prepare_plot( self, title = None  ):
 
         if ( title is None ):
-            title = 'Impression rates, ' + self._make_title()
+            title = 'Impression rates, ' + self.make_title_base()
 
         return TimeSeriesPlot(
             self.pandas_df(),
