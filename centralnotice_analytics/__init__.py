@@ -12,5 +12,8 @@ config_filename = os.path.join( path, '../config.yaml' )
 with open( config_filename, 'r' ) as stream:
     config = yaml.load( stream )
 
-# Friendlier number displays for aggregates
-pandas.set_option( 'display.float_format', lambda x: '{:,.4f}'.format( x) )
+# Prettier number displays
+pandas.set_option(
+    'display.float_format',
+    lambda x: '{:,.4f}'.format( x ) if x % 1 else '{:,.0f}'.format( x )
+)
