@@ -4,33 +4,108 @@ druid:
   url: "protocol://host:port"
   endpoint: "druid/v2"
 
-hive:
-  host: "host"
-  port: 10000
-
 # Config to translate from CN project to WMF production project, as it appears in the
 # project column of the wmf.pageview_hourly table in Hive. Coordinate with
-# $wgNoticeProject and $wgServer in InitialiseSettings.php, and
-# PageviewDefinition.getProjectFromHost() in analytics-refinery-source.
+# $wgNoticeProject and $wgServer in InitialiseSettings.php, default values for
+# $wgNoticeProjects, and PageviewDefinition.getProjectFromHost()
+# in analytics-refinery-source.
 
 # In this structure, outer keys are the project name as used for CentralNotice
-# campaign targeting. In the inner dictionaries, pattern is a string that apperas in
+# campaign targeting. In the inner dictionaries, url_str is a string that apperas in
 # wmf.pageview_hourly.project in Hive and that can uniquely select a project, and
 # lang_prefix indicates whether a language code may be added at the beginning of the
-# string. CentralNotice projects omitted from this config follow the default lang.project
-# format.
-project_lookup:
+# string.
+
+# This config is also used for input validation.
+project_lang_url_selection:
+  wikipedia: [ { url_str: 'wikipedia', lang_prefix: true } ]
+  wiktionary: [ { url_str: 'wiktionary', lang_prefix: true } ]
+  wikiquote: [ { url_str: 'wikiquote', lang_prefix: true } ]
+  wikibooks: [ { url_str: 'wikibooks', lang_prefix: true } ]
+  wikidata: [ { url_str: 'wikidata', lang_prefix: false } ]
+  wikinews: [ { url_str: 'wikinews', lang_prefix: true } ]
+  wikisource: [ { url_str: 'wikisource', lang_prefix: true } ]
+  wikiversity: [ { url_str: 'wikiversity', lang_prefix: true } ]
+  wikivoyage: [ { url_str: 'wikivoyage', lang_prefix: true } ]
+  mediawiki: [ { url_str: 'mediawiki', lang_prefix: false } ]
   wikimedia:
-    - { pattern: 'advisory.wikimedia', lang_prefix: false }
-    - { pattern: 'wikimediafoundation', lang_prefix: false }
-    - { pattern: 'incubator.wikimedia', lang_prefix: false }
-    - { pattern: 'outreach.wikimedia', lang_prefix: false }
-    - { pattern: 'usability.wikimedia', lang_prefix: false }
-    - { pattern: 'strategy.wikimedia', lang_prefix: false }
-    - { pattern: 'wikimania.....wikimedia', lang_prefix: false }
-  commons: [ { pattern: 'commons.wikimedia', lang_prefix: false } ]
-  mediawiki: [ { pattern: 'mediawiki', lang_prefix: false } ]
-  meta: [ { pattern: 'meta.mediawiki', lang_prefix: false } ]
-  wikispecies: [ { pattern: 'species.wikimedia', lang_prefix: false } ]
-  test: [ { pattern: 'test.wikipedia', lang_prefix: false } ]
-  wikidata: [ { pattern: 'wikidata', lang_prefix: false } ]
+    - { url_str: 'advisory.wikimedia', lang_prefix: false }
+    - { url_str: 'wikimediafoundation', lang_prefix: false }
+    - { url_str: 'incubator.wikimedia', lang_prefix: false }
+    - { url_str: 'outreach.wikimedia', lang_prefix: false }
+    - { url_str: 'usability.wikimedia', lang_prefix: false }
+    - { url_str: 'strategy.wikimedia', lang_prefix: false }
+    - { url_str: 'wikimania', lang_prefix: false }
+  commons: [ { url_str: 'commons.wikimedia', lang_prefix: false } ]
+  meta: [ { url_str: 'meta.mediawiki', lang_prefix: false } ]
+  wikispecies: [ { url_str: 'species.wikimedia', lang_prefix: false } ]
+  test: [ { url_str: 'test.wikipedia', lang_prefix: false } ]
+
+# Filters for pageviews, to approximate CN client-side device filtering. Coordinate with
+# PageviewDefinition in analytics-refinery-source.Also used for input validation.
+device_filters:
+  desktop:
+    dimension: 'access_method'
+    value: 'desktop'
+  android:
+    type: 'and'
+    fields:
+      - dimension: 'access_method'
+        value: 'mobile web'
+      - dimension: 'ua_os_family'
+        value: 'Android'
+  iphone:
+    type: 'and'
+    fields:
+      - dimension: 'access_method'
+        value: 'mobile web'
+      - dimension: 'ua_os_family'
+        value: 'iOS'
+      - dimension: 'ua_device_family'
+        value: 'iPhone'
+  ipad:
+    type: 'and'
+    fields:
+      - dimension: 'access_method'
+        value: 'mobile web'
+      - dimension: 'ua_os_family'
+        value: 'iOS'
+      - dimension: 'ua_device_family'
+        value: 'iPad'
+  # CN's 'other' device category targets devices on the mobile site that were not
+  # identified as android, ipad or iphone.
+  other:
+    type: 'and'
+    fields:
+      - dimension: 'access_method'
+        value: 'mobile web'
+      - type: 'not'
+        field:
+          dimension: 'ua_os_family'
+          value: 'Android'
+      - type: 'not'
+        field:
+          type: 'and'
+          fields:
+          - dimension: 'ua_os_family'
+            value: 'iOS'
+          - dimension: 'ua_device_family'
+            value: 'iPad'
+      - type: 'not'
+        field:
+          type: 'and'
+          fields:
+          - dimension: 'ua_os_family'
+            value: 'iOS'
+          - dimension: 'ua_device_family'
+            value: 'iPhone'
+
+# Filter for pageviews queries when no device is specified
+any_device_filter:
+  type: 'or'
+  fields:
+    - dimension: 'access_method'
+      value: 'desktop'
+    - dimension: 'access_method'
+      value: 'mobile web'
+  
