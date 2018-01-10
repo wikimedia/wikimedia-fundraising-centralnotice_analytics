@@ -16,6 +16,9 @@ class RatesQuery( Query ):
         if ( custom_filter ):
             raise ValueError( 'Custom filter not available for rates query.' )
 
+        if ( group_by ):
+            raise ValueError( 'Grouping not yet implemented for rates query.')
+
         super().__init__( campaign_spec, interval, granularity )
 
         self._pageviews = PageviewsQuery(
@@ -60,10 +63,10 @@ class RatesQuery( Query ):
         return rates_df
 
 
-    def prepare_plot( self, title = None  ):
+    def prepare_plot( self, title = None, max_group_by_values = 5 ):
 
         if ( title is None ):
-            title = 'Impression rates, ' + self.make_title_base()
+            title = self.make_title( 'Impression rates' )
 
         return TimeSeriesPlot(
             self.pandas_df(),

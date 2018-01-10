@@ -4,6 +4,8 @@ import numpy as np
 
 class TimeSeriesPlot:
 
+    # TODO Does the timeseries column from Druid ever omit rows if there were no values?
+
     def __init__( self, pandas_df, left_scale_label,
         left_scale_columns, right_scale_label = None, right_scale_columns = None,
         title = None, figsize = ( 20, 8 ) ):

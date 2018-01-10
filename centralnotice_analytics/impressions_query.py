@@ -30,10 +30,21 @@ class ImpressionsQuery( Query ):
         return self._druid_helper.pandas_df()
 
 
-    def prepare_plot( self, title = None  ):
+    def prepare_plot( self, title = None, max_group_by_values = 5 ):
 
         if ( title is None ):
-            title = 'Impressions, ' + self.make_title_base()
+            title = self.make_title( 'Impressions' )
+
+        if ( self._group_by_cols ):
+            flattened_df, group_columns = self.flatten_df_with_top_values(
+                'impressions', max_group_by_values )
+
+            return TimeSeriesPlot(
+                flattened_df,
+                'Impressions',
+                group_columns,
+                title = title
+            )
 
         return TimeSeriesPlot(
             self.pandas_df(),

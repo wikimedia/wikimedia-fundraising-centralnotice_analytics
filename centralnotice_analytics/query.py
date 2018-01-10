@@ -58,8 +58,66 @@ class Query:
         return self.pandas_df()[ self.columns_for_avg ].mean()
 
 
-    def plot( self, title = None ):
-        plot = self.prepare_plot( title )
+    def flatten_df_with_top_values( self, aggregate_col, max_values ):
+        df = self.pandas_df()
+
+        # Get the top max_values groups for aggregte_col values
+        top_values = (
+            df
+            .groupby( self._group_by_cols )[ [ aggregate_col ] ]
+            .sum()
+            .sort_values( by = [ aggregate_col ], ascending = False )
+            .head( max_values )
+            .reset_index()
+        )
+
+        # TODO Maybe find a faster way to do this?
+        # Create a list two-column dataframes, one for each top value
+        group_dfs = []
+        for i in range( 0, len( top_values ) ):
+            group_df = df.copy()
+            group_label_parts = []
+
+            for col in self._group_by_cols:
+                val = top_values[ col ][ i ]
+                group_df = group_df[ group_df[ col ] == val ]
+                group_label_parts.append( val )
+
+            # remove unwanted columns
+            for col in group_df.columns.tolist():
+                if ( ( col == aggregate_col ) or ( col == 'timestamp' ) ):
+                    continue
+
+                group_df.drop( col, axis=1, inplace = True )
+
+            # rename the aggregate to identify the value(s) it represents
+            group_df.rename(
+                columns = { aggregate_col: ', '.join( group_label_parts ) },
+                inplace = True
+            )
+
+            group_df.set_index( 'timestamp', inplace = True )
+            group_dfs.append( group_df )
+
+        # Join using an index of all timestamps in the original dataframe
+        timestamps = df[['timestamp']].drop_duplicates().copy().set_index( 'timestamp' )
+
+        flattened_df = (
+            timestamps
+            .join( group_dfs )
+            .reset_index()
+            .rename( columns = { 'index': 'timestamp' } )
+            .fillna( 0 )
+        )
+
+        group_columns = flattened_df.columns.tolist()
+        group_columns.remove( 'timestamp' )
+
+        return ( flattened_df, group_columns )
+
+
+    def plot( self, title = None, max_group_by_values = 5 ):
+        plot = self.prepare_plot( title, max_group_by_values )
         plot.show()
 
 
@@ -67,8 +125,12 @@ class Query:
         print ( self.make_query_dump() )
 
 
-    def make_title_base( self ):
-        return '{0} by {1}, {2}'.format(
+    def make_title( self, prefix ):
+        if ( self._group_by_cols ):
+            prefix += ' grouped by ' + '/'.join( self._group_by_cols )
+
+        return '{0}, {1} by {2}, {3}'.format(
+            prefix,
             self._interval,
             self._granularity,
             self._campaign_spec.title()
@@ -76,7 +138,7 @@ class Query:
 
 
     @abstractmethod
-    def prepare_plot( self, title = None ): pass
+    def prepare_plot( self, title = None, max_group_by_values = 5 ): pass
 
 
     @abstractmethod

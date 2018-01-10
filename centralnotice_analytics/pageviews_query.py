@@ -42,10 +42,21 @@ class PageviewsQuery( Query ):
         return self._druid_helper.pandas_df()
 
 
-    def prepare_plot( self, title = None  ):
+    def prepare_plot( self, title = None, max_group_by_values = 5 ):
 
         if ( title is None ):
-            title = 'Pageviews, ' + self.make_title_base()
+            title = self.make_title( 'Pageviews' )
+
+        if ( self._group_by_cols ):
+            flattened_df, group_columns = self.flatten_df_with_top_values(
+                'pageviews', max_group_by_values )
+
+            return TimeSeriesPlot(
+                flattened_df,
+                'Pageviews',
+                group_columns,
+                title = title
+            )
 
         return TimeSeriesPlot(
             self.pandas_df(),
