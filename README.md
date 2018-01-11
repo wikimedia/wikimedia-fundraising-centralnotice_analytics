@@ -65,10 +65,12 @@ Installation and setup
 Access to WMF data stores is required. For Jupyter notebook setup, see
 [SWAP instructions](https://wikitech.wikimedia.org/wiki/SWAP#Usage) on Wikitech.
 
+Copy `config_example.yaml` as `config.yaml`, and set the Druid URL there.
+
 For development, copy the repository to the notebook server. The following rsync
 command may be useful:
 
-`rsync -vr --delete -e ssh --exclude ".*project" --exclude "*__pycache__*" /local/path/to/centralnotice_analytics/ notebook1001.eqiad.wmnet:~/path/on/server/centralnotice_analytics`
+`rsync -vr --delete -e ssh --exclude ".*project" --exclude "*__pycache__*" /local/path/to/centralnotice_analytics/ jupyter.notebook.server:~/path/on/server/centralnotice_analytics`
 
 Then in the Jupyter notebook, try:
 
