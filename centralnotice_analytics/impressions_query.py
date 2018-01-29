@@ -62,13 +62,15 @@ class ImpressionsQuery( Query ):
         # the following filters are always present
         filters = [
             self.campaign_druid_filter(),
-            self.project_druid_filter(),
-            self.language_druid_filter()
+            self.project_druid_filter()
         ]
 
-        # campaign spec may not include geolocation or device
+        # campaign spec may not include geolocation, language or device
         if ( self._campaign_spec.devices ):
             filters.append( self.device_druid_filter() )
+
+        if ( self._campaign_spec.languages ):
+            filters.append( self.self.language_druid_filter() )
 
         if ( self._campaign_spec.countries ):
             filters.append( self.country_druid_filter() )
