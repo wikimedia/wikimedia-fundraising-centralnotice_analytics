@@ -10,10 +10,10 @@ class CampaignSpec:
         Settings should correspond to those in CentralNotice.
 
         :param list names: Names of CentralNotice campaigns. (Either names or name_regex
-            must be provided.)
+            may be provided, but not both. However, both may be omitted.)
         :param str name_regex: Regular expression pattern to select campaigns.
-        :param list projects: Names of CentralNotice projects targeted by the campaign
-            (required).
+        :param list projects: Names of CentralNotice projects targeted by the campaign.
+            (Omit for campaigns targeting all projects.)
         :param list languages: Language codes of the languages targeted by the campaign.
             (Omit for campaigns targeting all languages.)
         :param list countries: Country codes of the countries targeted by the
@@ -23,17 +23,15 @@ class CampaignSpec:
         """
 
         # Basic input validation
-        if ( ( names is None ) and ( name_regex is None ) ):
-            raise ValueError( 'Either name or name_regex must be provided.' )
+        if ( ( names is not None ) and ( name_regex is not None ) ):
+            raise ValueError( 'name and name_regex cannot both be set.' )
 
-        if ( projects is None ):
-            raise ValueError ( 'projects must be provided.' )
-
-        available_projects = cna.config[ 'project_lang_url_selection' ].keys()
-        for project in projects:
-            if ( project not in available_projects ):
-                raise ValueError(
-                    'Invalid project "{0}" requested.'.format ( project ) )
+        if ( projects ):
+            available_projects = cna.config[ 'project_lang_url_selection' ].keys()
+            for project in projects:
+                if ( project not in available_projects ):
+                    raise ValueError(
+                        'Invalid project "{0}" requested.'.format ( project ) )
 
         if ( devices ):
             available_devices = cna.config[ 'device_filters' ].keys()
@@ -56,10 +54,12 @@ class CampaignSpec:
     def title( self ):
         if ( self.name_regex ):
             title = '/{0}/'.format( self.name_regex )
-        else:
+
+        if ( self.names):
             title = self._make_str_for_title( self.names, 'campaigns' )
 
-        title += ', ' + self._make_str_for_title( self.projects, 'projects' )
+        if ( self.projects ):
+            title += ', ' + self._make_str_for_title( self.projects, 'projects' )
 
         if ( self.languages ):
             title += ', ' + self._make_str_for_title( self.languages, 'languages' )
@@ -71,6 +71,10 @@ class CampaignSpec:
             title += ', ' + self._make_str_for_title( self.devices, 'devices' )
 
         return title
+
+
+    def default_projects( self ):
+        return list( cna.config[ 'project_lang_url_selection' ].keys() )
 
 
     def _make_str_for_title( self, spec, plural_name ):

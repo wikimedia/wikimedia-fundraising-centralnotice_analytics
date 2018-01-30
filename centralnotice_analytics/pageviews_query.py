@@ -155,7 +155,11 @@ class PageviewsQuery( Query ):
         # filter pageviews by language for not-logged-in users. We'll warn about those.
         cluster_projects_without_lang = []
 
-        for project in self._campaign_spec.projects:
+        # Even if no projects were included in the spec, we need to filter projects, since
+        # cn does not run on all WMF wikis. Also, language filtering varies by WMF wiki.
+        projects = self._campaign_spec.projects or self._campaign_spec.default_projects()
+
+        for project in projects:
             project_configs = cna.config[ 'project_lang_url_selection' ][ project ] 
             for project_config in project_configs:
 

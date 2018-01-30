@@ -59,13 +59,15 @@ class ImpressionsQuery( Query ):
 
 
     def druid_filter( self ):
-        # the following filters are always present
-        filters = [
-            self.campaign_druid_filter(),
-            self.project_druid_filter()
-        ]
+        filters = []
 
-        # campaign spec may not include geolocation, language or device
+        # campaign spec may or may not include several criteria
+        if ( self._campaign_spec.names or self._campaign_spec.name_regex ):
+            filters.append( self.campaign_druid_filter() )
+
+        if ( self._campaign_spec.projects ):
+            filters.append( self.project_druid_filter() )
+
         if ( self._campaign_spec.devices ):
             filters.append( self.device_druid_filter() )
 
@@ -89,12 +91,12 @@ class ImpressionsQuery( Query ):
                 values = self._campaign_spec.names
             )
 
-        # if no campaign names were provided in the spec, name_regex be there
-        return Filter(
-            type = 'regex',
-            dimension = 'campaign',
-            pattern = self._campaign_spec.name_regex
-        )
+        if ( self._campaign_spec.name_regex ):
+            return Filter(
+                type = 'regex',
+                dimension = 'campaign',
+                pattern = self._campaign_spec.name_regex
+            )
 
 
     def country_druid_filter( self ):
