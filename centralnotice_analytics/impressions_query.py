@@ -72,7 +72,7 @@ class ImpressionsQuery( Query ):
             filters.append( self.device_druid_filter() )
 
         if ( self._campaign_spec.languages ):
-            filters.append( self.self.language_druid_filter() )
+            filters.append( self.language_druid_filter() )
 
         if ( self._campaign_spec.countries ):
             filters.append( self.country_druid_filter() )
