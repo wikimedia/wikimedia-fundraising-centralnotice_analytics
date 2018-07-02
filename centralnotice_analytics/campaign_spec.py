@@ -52,25 +52,27 @@ class CampaignSpec:
 
 
     def title( self ):
+        title_parts = []
+
         if ( self.name_regex ):
-            title = '/{0}/'.format( self.name_regex )
+            title_parts.append( '/{0}/'.format( self.name_regex ) )
 
         if ( self.names):
-            title = self._make_str_for_title( self.names, 'campaigns' )
+            title_parts.append( self._make_str_for_title( self.names, 'campaigns' ) )
 
         if ( self.projects ):
-            title += ', ' + self._make_str_for_title( self.projects, 'projects' )
+            title_parts.append( self._make_str_for_title( self.projects, 'projects' ) )
 
         if ( self.languages ):
-            title += ', ' + self._make_str_for_title( self.languages, 'languages' )
+            title_parts.append( self._make_str_for_title( self.languages, 'languages' ) )
 
         if ( self.countries ):
-            title += ', ' + self._make_str_for_title( self.countries, 'countries' )
+            title_parts.append( self._make_str_for_title( self.countries, 'countries' ) )
 
         if ( self.devices ):
-            title += ', ' + self._make_str_for_title( self.devices, 'devices' )
+            title_parts.append( self._make_str_for_title( self.devices, 'devices' ) )
 
-        return title
+        return ', '.join( title_parts )
 
 
     def default_projects( self ):
