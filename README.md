@@ -74,10 +74,12 @@ command may be useful:
 
 Then in the Jupyter notebook, try:
 
-`!pip install -e /home/your_dir/path/on/server/centralnotice_analytics`
+`!pip install -e /home/your_dir/path/on/server/centralnotice_analytics[plots]`
 
 This should make the package accessible to python using a link, so that you can continue
 to update the source code. Restart the Jupyter kernel after any changes.
+
+It should also install all dependencies, including optional ones needed for plot functionality.
 
 Limitations and future features
 -------------------------------
