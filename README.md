@@ -68,13 +68,13 @@ Access to WMF data stores is required. For Jupyter notebook setup, see
 Copy `config_example.yaml` as `config.yaml`, and set the Druid URL there.
 
 For development, copy the repository to the notebook server. The following rsync
-command may be useful:
+command may be useful. (Substitute paths for local and server locations appropriately.)
 
-`rsync -vr --delete -e ssh --exclude ".*project" --exclude "*__pycache__*" /local/path/to/centralnotice_analytics/ jupyter.notebook.server:~/path/on/server/centralnotice_analytics`
+`rsync -vr --delete -e ssh --exclude ".*project" --exclude "*__pycache__*" /local/path/to/centralnotice_analytics/ jupyter.notebook.server:/path/on/server/to/centralnotice_analytics`
 
-Then in the Jupyter notebook, try:
+Then, in the Jupyter notebook, try:
 
-`!pip install -e /home/your_dir/path/on/server/centralnotice_analytics[plots]`
+`!pip install -e /path/on/server/to/centralnotice_analytics[plots]`
 
 This should make the package accessible to python using a link, so that you can continue
 to update the source code. Restart the Jupyter kernel after any changes.
