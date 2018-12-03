@@ -136,7 +136,7 @@ class PageviewsQuery( Query ):
 
     def druid_timeseries_query_args( self ):
         return {
-            'datasource': 'pageviews-hourly',
+            'datasource': 'pageviews_hourly',
             'granularity': self._granularity,
             'intervals': self._interval,
             'aggregations': { 'pageviews': doublesum( 'view_count' ) },
