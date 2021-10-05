@@ -1,6 +1,7 @@
 druid:
-  # Set bypass_proxy to true to bypass system-configured proxy, for WMF SWAP/Jupyter setup.
-  bypass_proxy: true
+  # Previous analytics setup required bypass_proxy to get around a system-configured proxy.
+  # Seems this is no longer needed, though!
+  bypass_proxy: false
   url: "protocol://host:port"
   endpoint: "druid/v2"
 
